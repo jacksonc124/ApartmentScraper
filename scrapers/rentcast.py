@@ -5,6 +5,7 @@ scraper works out of the box with zero signup via Craigslist alone.
 """
 
 import os
+from urllib.parse import quote_plus
 
 import requests
 
@@ -16,6 +17,19 @@ from config import (
 )
 
 API_URL = "https://api.rentcast.io/v1/listings/rental/long-term"
+
+
+def _listing_url(item: dict) -> str:
+    """RentCast's response has no direct listing-page URL field (verified
+    against their schema docs). Prefer the listing agent's own site if
+    given; otherwise fall back to a Google search on the exact address,
+    which reliably surfaces wherever the unit is actually syndicated
+    (Zillow, Apartments.com, etc.)."""
+    agent_site = (item.get("listingAgent") or {}).get("website")
+    if agent_site:
+        return agent_site
+    address = item.get("formattedAddress", "")
+    return f"https://www.google.com/search?q={quote_plus(address + ' apartment for rent')}"
 
 
 def fetch():
@@ -57,7 +71,7 @@ def fetch():
                     "id": f"rentcast-{item.get('id')}",
                     "source": "rentcast",
                     "title": item.get("formattedAddress", ""),
-                    "url": item.get("listingUrl") or "https://rentcast.io",
+                    "url": _listing_url(item),
                     "neighborhood": neighborhood,
                     "price": item.get("price"),
                     "beds": item.get("bedrooms"),

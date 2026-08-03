@@ -42,9 +42,12 @@ def upsert_listing(conn, listing: dict):
     ).fetchone()
     if existing:
         conn.execute(
-            """UPDATE listings SET price=?, title=?, last_seen=CURRENT_TIMESTAMP
-               WHERE id=?""",
-            (listing["price"], listing["title"], listing["id"]),
+            """UPDATE listings SET source=:source, title=:title, url=:url,
+               neighborhood=:neighborhood, price=:price, beds=:beds, baths=:baths,
+               walk_min=:walk_min, transit_min=:transit_min, posted_at=:posted_at,
+               last_seen=CURRENT_TIMESTAMP
+               WHERE id=:id""",
+            listing,
         )
     else:
         conn.execute(
