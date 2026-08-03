@@ -55,6 +55,14 @@ def upsert_listing(conn, listing: dict):
         )
 
 
+def prune_missing(conn, seen_ids: set):
+    """Remove listings not returned by the current run — they're no longer active."""
+    if not seen_ids:
+        return  # a run that found nothing is more likely a failed fetch than a real empty market
+    placeholders = ",".join("?" for _ in seen_ids)
+    conn.execute(f"DELETE FROM listings WHERE id NOT IN ({placeholders})", tuple(seen_ids))
+
+
 def all_listings(conn):
     return conn.execute(
         "SELECT * FROM listings ORDER BY price ASC"

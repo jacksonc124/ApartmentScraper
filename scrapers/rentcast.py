@@ -41,7 +41,8 @@ def fetch():
                 "radius": geo["radius"],
                 "bedrooms": BEDS_REQUIRED,
                 "bathrooms": BATHS_REQUIRED,
-                "limit": 100,
+                "status": "Active",
+                "limit": 500,
             },
             timeout=20,
         )
