@@ -3,7 +3,7 @@
 import os
 from datetime import datetime, timezone
 
-from config import SITE_OUTPUT_PATH
+from config import NEIGHBORHOODS, SITE_OUTPUT_PATH
 from storage import all_listings, get_db
 
 ROW_TEMPLATE = """
@@ -21,7 +21,7 @@ PAGE_TEMPLATE = """<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>ApartmentScraper — River North / Old Town / Gold Coast</title>
+<title>ApartmentScraper — {neighborhood_list}</title>
 <style>
   body {{ font-family: system-ui, sans-serif; margin: 2rem; background: #111; color: #eee; }}
   h1 {{ font-size: 1.4rem; }}
@@ -33,7 +33,7 @@ PAGE_TEMPLATE = """<!doctype html>
 </style>
 </head>
 <body>
-<h1>2bd/2ba — River North, Old Town, Gold Coast</h1>
+<h1>2bd/2ba — {neighborhood_list}</h1>
 <div class="meta">{count} listings · last updated {updated}</div>
 <table>
 <thead>
@@ -67,6 +67,7 @@ def generate():
     )
 
     html = PAGE_TEMPLATE.format(
+        neighborhood_list=" / ".join(NEIGHBORHOODS),
         count=len(rows),
         updated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         rows=rows_html or "<tr><td colspan='6'>No listings yet — run main.py</td></tr>",
