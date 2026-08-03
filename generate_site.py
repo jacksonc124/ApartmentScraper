@@ -1,5 +1,6 @@
 """Builds a static HTML page from the SQLite listings table. No server needed."""
 
+import os
 from datetime import datetime, timezone
 
 from config import SITE_OUTPUT_PATH
@@ -71,6 +72,7 @@ def generate():
         rows=rows_html or "<tr><td colspan='6'>No listings yet — run main.py</td></tr>",
     )
 
+    os.makedirs(os.path.dirname(SITE_OUTPUT_PATH), exist_ok=True)
     with open(SITE_OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(html)
 
