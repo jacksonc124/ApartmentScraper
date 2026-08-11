@@ -1,14 +1,14 @@
 # ApartmentScraper
 
-Finds available 2bd/2ba apartments in **River North, Old Town, Gold Coast,
-West Loop, Streeterville, and Lincoln Park** (Chicago) for a commute to
-Willis Tower — free, small-scale, no paid APIs required.
+Finds available 2br/1+ba apartments under **$3,200/mo** in **Old Town,
+Lakeview, and Lincoln Park** (Chicago) for a commute to Willis Tower — free,
+small-scale, no paid APIs required.
 
 ## How it works
 
 - **RentCast** (`scrapers/rentcast.py`) — the real data source. Free tier
-  (50 calls/month). Does one lat/long+radius search per neighborhood (6 calls
-  per run for the current 6 neighborhoods), since RentCast has no
+  (50 calls/month). Does one lat/long+radius search per neighborhood (3 calls
+  per run for the current 3 neighborhoods), since RentCast has no
   "neighborhood" field to filter on directly. Requires a free
   `RENTCAST_API_KEY` — nothing will show up without it.
 - **Craigslist RSS** (`scrapers/craigslist.py`) — attempted but currently

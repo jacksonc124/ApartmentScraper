@@ -7,10 +7,11 @@ import feedparser
 import requests
 
 from config import (
-    BATHS_REQUIRED,
+    BATHS_MIN,
     BEDS_REQUIRED,
     COMMUTE_TO_WILLIS_TOWER_MIN,
     CRAIGSLIST_RSS_URL,
+    MAX_PRICE,
     NEIGHBORHOOD_KEYWORDS,
 )
 
@@ -38,7 +39,7 @@ def fetch():
     from a real browser session). This silently returns [] on failure rather
     than crashing the whole run — RentCast is the reliable source.
     """
-    url = CRAIGSLIST_RSS_URL.format(beds=BEDS_REQUIRED, baths=BATHS_REQUIRED)
+    url = CRAIGSLIST_RSS_URL.format(beds=BEDS_REQUIRED, baths_min=BATHS_MIN, max_price=MAX_PRICE)
     try:
         resp = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=20)
         resp.raise_for_status()
@@ -56,7 +57,7 @@ def fetch():
 
         neighborhood = _match_neighborhood(combined)
         if not neighborhood:
-            continue  # not one of River North / Old Town / Gold Coast
+            continue  # not one of our target neighborhoods
 
         price_match = PRICE_RE.search(title)
         price = int(price_match.group(1).replace(",", "")) if price_match else None
@@ -72,7 +73,7 @@ def fetch():
                 "neighborhood": neighborhood,
                 "price": price,
                 "beds": BEDS_REQUIRED,
-                "baths": BATHS_REQUIRED,
+                "baths": None,  # Craigslist's title/RSS doesn't reliably state exact bath count
                 "walk_min": commute.get("walk"),
                 "transit_min": commute.get("transit"),
                 "posted_at": getattr(entry, "published", None),

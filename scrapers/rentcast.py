@@ -10,9 +10,10 @@ from urllib.parse import quote_plus
 import requests
 
 from config import (
-    BATHS_REQUIRED,
+    BATHS_MIN,
     BEDS_REQUIRED,
     COMMUTE_TO_WILLIS_TOWER_MIN,
+    MAX_PRICE,
     NEIGHBORHOOD_GEO,
 )
 
@@ -33,12 +34,13 @@ def _listing_url(item: dict) -> str:
 
 
 def fetch():
-    """One lat/long+radius call per neighborhood (3 calls/run).
+    """One lat/long+radius call per neighborhood (3 calls/run for the
+    current Old Town / Lakeview / Lincoln Park set).
 
     RentCast has no neighborhood field to filter on, so geo search is the
-    only reliable way to target River North / Old Town / Gold Coast
-    specifically. At 3 calls/run, stay at run frequency <= every 3 days to
-    remain under the free tier's 50 calls/month (weekly = 12/mo is safest).
+    only reliable way to target these areas specifically. At 3 calls/run,
+    stay at run frequency <= weekly to remain comfortably under the free
+    tier's 50 calls/month.
     """
     api_key = os.environ.get("RENTCAST_API_KEY")
     if not api_key:
@@ -54,7 +56,8 @@ def fetch():
                 "longitude": geo["lon"],
                 "radius": geo["radius"],
                 "bedrooms": BEDS_REQUIRED,
-                "bathrooms": BATHS_REQUIRED,
+                "bathrooms": f"{BATHS_MIN}:*",  # open-ended min range per RentCast's numeric range syntax
+                "price": f"*:{MAX_PRICE}",  # open-ended max range, same syntax
                 "status": "Active",
                 "limit": 500,
             },

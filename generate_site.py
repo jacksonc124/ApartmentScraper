@@ -3,7 +3,7 @@
 import os
 from datetime import datetime, timezone
 
-from config import NEIGHBORHOODS, SITE_OUTPUT_PATH
+from config import MAX_PRICE, NEIGHBORHOODS, SITE_OUTPUT_PATH
 from storage import all_listings, get_db
 
 ROW_TEMPLATE = """
@@ -33,7 +33,7 @@ PAGE_TEMPLATE = """<!doctype html>
 </style>
 </head>
 <body>
-<h1>2bd/2ba — {neighborhood_list}</h1>
+<h1>2br/1+ba under ${max_price:,} — {neighborhood_list}</h1>
 <div class="meta">{count} listings · last updated {updated}</div>
 <table>
 <thead>
@@ -68,6 +68,7 @@ def generate():
 
     html = PAGE_TEMPLATE.format(
         neighborhood_list=" / ".join(NEIGHBORHOODS),
+        max_price=MAX_PRICE,
         count=len(rows),
         updated=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         rows=rows_html or "<tr><td colspan='6'>No listings yet — run main.py</td></tr>",

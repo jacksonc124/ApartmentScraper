@@ -2,21 +2,15 @@
 
 # "Loop and North" neighborhoods for this search
 NEIGHBORHOODS = [
-    "River North",
     "Old Town",
-    "Gold Coast",
-    "West Loop",
-    "Streeterville",
+    "Lakeview",
     "Lincoln Park",
 ]
 
 # Craigslist neighborhood/area query terms (used to filter listing titles/body)
 NEIGHBORHOOD_KEYWORDS = {
-    "River North": ["river north", "rivernorth", "river-north"],
     "Old Town": ["old town", "oldtown"],
-    "Gold Coast": ["gold coast", "goldcoast"],
-    "West Loop": ["west loop", "westloop", "fulton market"],
-    "Streeterville": ["streeterville"],
+    "Lakeview": ["lakeview", "lake view", "wrigleyville"],
     "Lincoln Park": ["lincoln park", "lincolnpark"],
 }
 
@@ -26,11 +20,8 @@ NEIGHBORHOOD_KEYWORDS = {
 # to target these areas specifically. Borders are fuzzy; tune radius if
 # you're getting bleed into adjacent areas.
 NEIGHBORHOOD_GEO = {
-    "River North": {"lat": 41.8925, "lon": -87.6350, "radius": 0.6},
     "Old Town": {"lat": 41.9087, "lon": -87.6386, "radius": 0.5},
-    "Gold Coast": {"lat": 41.9048, "lon": -87.6263, "radius": 0.5},
-    "West Loop": {"lat": 41.8825, "lon": -87.6510, "radius": 0.7},
-    "Streeterville": {"lat": 41.8925, "lon": -87.6220, "radius": 0.4},
+    "Lakeview": {"lat": 41.9403, "lon": -87.6538, "radius": 0.9},
     "Lincoln Park": {"lat": 41.9250, "lon": -87.6450, "radius": 0.8},
 }
 
@@ -38,23 +29,22 @@ NEIGHBORHOOD_GEO = {
 # Hardcoded instead of calling a paid distance-matrix API, since the search
 # is locked to a fixed, known set of neighborhoods.
 COMMUTE_TO_WILLIS_TOWER_MIN = {
-    "River North": {"walk": 25, "transit": 12},
     "Old Town": {"walk": 40, "transit": 20},
-    "Gold Coast": {"walk": 35, "transit": 18},
-    "West Loop": {"walk": 15, "transit": 8},
-    "Streeterville": {"walk": 30, "transit": 15},
+    "Lakeview": {"walk": 130, "transit": 32},
     "Lincoln Park": {"walk": 55, "transit": 25},
 }
 
-BEDS_REQUIRED = 2
-BATHS_REQUIRED = 2
+BEDS_REQUIRED = 2  # exact match
+BATHS_MIN = 1  # 1 or more, not exact — see NEIGHBORHOOD_GEO's use of RentCast's open-ended range syntax
+MAX_PRICE = 3200  # total monthly rent, not per-person
 
 # Chicago Craigslist search RSS feed for apartments, filtered server-side
-# where possible (bedrooms), neighborhood/bath filtering happens client-side.
+# where possible (bedrooms/price), neighborhood/bath filtering happens client-side.
 CRAIGSLIST_RSS_URL = (
     "https://chicago.craigslist.org/search/apa"
     "?min_bedrooms={beds}"
-    "&min_bathrooms={baths}"
+    "&min_bathrooms={baths_min}"
+    "&max_price={max_price}"
     "&availabilityMode=0"
     "&format=rss"
 )
